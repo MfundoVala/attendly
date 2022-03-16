@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useRef, useState, useEffect } from 'react';
 import { Animated, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import profile from './assets/profile.png';
+import profile from './assets/attendwe.png';
 import { COLORS, FONTS, ICONS, SHADOW } from "./constants"
 import * as LocalAuthentication from 'expo-local-authentication'
 import * as Location from 'expo-location';
@@ -43,7 +43,8 @@ export default function App() {
       setIsBiometricSupported(compatible);
     })();
   });
-  //check whether local device has records send to front desk if not
+
+  //check whether local device has records  if not send to front desk
   const checkBiometricAuth = async () => {
     const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
       if (!savedBiometrics)
@@ -53,7 +54,35 @@ export default function App() {
         'OK',
         () => fallBackToDefaultAuth()
       ); 
+}
 
+const woodstockCampus = [-33.927330,18.455440]
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180)
+}
+
+function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+  var dLon = deg2rad(lon2-lon1); 
+  var a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ; 
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  var d = R * c; // Distance in km
+  console.log('Distance:', d)
+  return d;
+}
+
+function isOnCampus(dist){
+  isOn = false;
+  if (dist<0.3){
+    isOn = true;
+  }
+  return isOn
 }
 
 const handleBiometricAuth = async () => {  
@@ -62,19 +91,37 @@ const handleBiometricAuth = async () => {
         disableDeviceFallback: true,
         cancelLabel: 'Cancel',
       });
+
   const { status } = await Location.requestForegroundPermissionsAsync();
   let locationResult = await Location.getCurrentPositionAsync({});
-  if (biometricAuth["success"]){setShowAlert(true)} 
+  distanceFromCampus = getDistanceFromLatLonInKm(woodstockCampus[0],woodstockCampus[1],locationResult["coords"]["latitude"],locationResult["coords"]["longitude"]);
+
+  if (biometricAuth["success"]){
+    if (isOnCampus(distanceFromCampus)){
+      setShowAlert(true)
+    }else {
+      setShowError(true)
+      console.log("can't checkin if you're not on campus")
+    } 
+  }
+
+  console.log('wood 0:',woodstockCampus[0])
+  console.log('wood 1:',woodstockCampus[1])
+  console.log('locresLat:',locationResult["coords"]["latitude"])
+  console.log('locresLon:',locationResult["coords"]["longitude"])
+  console.log('distance:',distanceFromCampus)
+  console.log('ison Result:', isOnCampus(distanceFromCampus))
+
   console.log('Scan Result:', biometricAuth["success"]);
   console.log('Location Result:', locationResult);
 }
 
-const getCurrentPosition = async () => {
-
-
-}
 
 const [showAlert, setShowAlert] = useState(
+  false,
+);
+
+const [showError, setShowError] = useState(
   false,
 );
 checkBiometricAuth
@@ -87,27 +134,35 @@ checkBiometricAuth
         dismissAlert={setShowAlert}
         />
 
+        <AlertModal
+        displayMode={'fail'}
+        displayMsg={'Unable to Check-in!\n You are not on campus.'}
+        visibility={showError}
+        dismissAlert={setShowError}
+        />
+
       <View style={{ justifyContent: 'flex-start', padding: 15 }}>
         <Image source={profile} style={{
-          width: 60,
-          height: 60,
+          width: 100,
+          height: 100,
           borderRadius: 10,
-          marginTop: 8
+          marginTop: 30,
+          marginLeft: -10
         }}></Image>
 
         <Text style={{
           fontSize: 20,
           fontWeight: 'bold',
           color: 'white',
-          marginTop: 20
-        }}>We Think Code</Text>
+          marginTop: 10
+        }}>Attendly</Text>
 
         <TouchableOpacity 
         >
           <Text style={{
-            marginTop: 6,
+            marginTop: 0,
             color: 'white'
-          }}>Student Check-in</Text>
+          }}>by We Think Code_</Text>
         </TouchableOpacity>
 
         <View style={{ flexGrow: 1, marginTop: 50 }}>

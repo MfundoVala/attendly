@@ -47,7 +47,7 @@ export default function AlertModal({
                 </>
               ) : (
                 <>
-                  <MaterialIcons name="cancel" color={'red'} size={80} />
+                  <MaterialIcons name="cancel" color={'red'} size={50} />
                 </>
               )}
               <Text style={{fontSize: 25, ...FONTS.h2_SemBold, textAlign: 'center', marginTop: 5}}>{displayMsg}</Text>
