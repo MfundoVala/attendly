@@ -5,6 +5,7 @@ import notifications from '../assets/bell.png';
 import settings from '../assets/settings.png';
 import logout from '../assets/logout.png';
 import fingerPrint from '../assets/fingerprint.png';
+import checkinImage from '../assets/checkin.png';
 
 
 // Menu Icons
@@ -18,7 +19,8 @@ const ICONS = {
     logout,
     fingerPrint,
     menu,
-    close
+    close,
+    checkinImage
 }
 const FONTS = {
     h1_med: {fontSize: 20, fontFamily: "PopMed"},
@@ -41,4 +43,16 @@ const COLORS = {
     blueVariant: "#ebf3f9",
 }
 
-export {ICONS, COLORS, FONTS}
+const SHADOW = {
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 2, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 13,
+    elevation: 25,
+}
+const CLIENT_ID = "938505836966-inudjtli83caq7fmb89elckmfkl2q8cm.apps.googleusercontent.com"
+const GOOGLE_API_KEY = "AIzaSyAraq6XXks6ixvO1Se8EZ9gTKijS9zxs3Q"
+const SHEETS_API_URL = "https://sheets.googleapis.com/v4/spreadsheets/1QrcV3ifT7KlCiPin9MSS-1hpGHziVjH2f0b1L5Z0mMo/values/attendly?valueRenderOption=FORMATTED_VALUE&key=AIzaSyAraq6XXks6ixvO1Se8EZ9gTKijS9zxs3Q"
+
+
+export {ICONS, COLORS, FONTS, SHADOW,GOOGLE_API_KEY,SHEETS_API_URL}

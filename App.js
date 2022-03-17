@@ -3,15 +3,13 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Animated, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import profile from './assets/attendwe.png';
 import { COLORS, FONTS, ICONS, SHADOW } from "./constants"
-import * as LocalAuthentication from 'expo-local-authentication'
-import * as Location from 'expo-location';
-import Boundary, {Events} from 'react-native-boundary'
 import AlertModal from './components/AlertModal';
 import { useFonts } from 'expo-font';
 
 import Checkin from './pages/CheckIn';
+import Profile from './pages/Profile';
+import { LottieComponent } from './components/LottieComponent';
 // Photo
-import photo from './assets/photo.jpg';
 import Btn from './components/Btn';
 
 export default function App() {
@@ -27,8 +25,7 @@ export default function App() {
   const scaleValue = useRef(new Animated.Value(1)).current;
   const closeButtonOffset = useRef(new Animated.Value(0)).current;
 
-  // wherever the useState is located 
-  const [isBiometricSupported, setIsBiometricSupported] = React.useState(false);
+
 
   const [loaded] = useFonts({
     PopMed: require('./assets/fonts/Poppins-Medium.ttf'),
@@ -36,110 +33,23 @@ export default function App() {
     PopSemBold: require('./assets/fonts/Poppins-SemiBold.ttf'),
   });
 
-  //check whether device has the right hardware
-  useEffect(() => {
-    (async () => {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      setIsBiometricSupported(compatible);
-    })();
-  });
+  function pageSelector(props) {
+    Page = props.currentPage
+    if (Page == "Profile"){
+        return(
+            <Profile></Profile>
+        )
+    }
+    else if (Page == "Check in"){
+        return (
+            <Checkin></Checkin>
+        )
+    }
 
-  //check whether local device has records  if not send to front desk
-  const checkBiometricAuth = async () => {
-    const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
-      if (!savedBiometrics)
-      return Alert.alert(
-        'Biometric record not found',
-        'Please Check in at front desk',
-        'OK',
-        () => fallBackToDefaultAuth()
-      ); 
 }
 
-const woodstockCampus = [-33.927330,18.455440]
-
-function deg2rad(deg) {
-  return deg * (Math.PI/180)
-}
-
-function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
-  var R = 6371; // Radius of the earth in km
-  var dLat = deg2rad(lat2-lat1);  // deg2rad below
-  var dLon = deg2rad(lon2-lon1); 
-  var a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2)
-    ; 
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  var d = R * c; // Distance in km
-  console.log('Distance:', d)
-  return d;
-}
-
-function isOnCampus(dist){
-  isOn = false;
-  if (dist<0.3){
-    isOn = true;
-  }
-  return isOn
-}
-
-const handleBiometricAuth = async () => {  
-  let biometricAuth = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Check-in to Campus',
-        disableDeviceFallback: true,
-        cancelLabel: 'Cancel',
-      });
-
-  const { status } = await Location.requestForegroundPermissionsAsync();
-  let locationResult = await Location.getCurrentPositionAsync({});
-  distanceFromCampus = getDistanceFromLatLonInKm(woodstockCampus[0],woodstockCampus[1],locationResult["coords"]["latitude"],locationResult["coords"]["longitude"]);
-
-  if (biometricAuth["success"]){
-    if (isOnCampus(distanceFromCampus)){
-      setShowAlert(true)
-    }else {
-      setShowError(true)
-      console.log("can't checkin if you're not on campus")
-    } 
-  }
-
-  console.log('wood 0:',woodstockCampus[0])
-  console.log('wood 1:',woodstockCampus[1])
-  console.log('locresLat:',locationResult["coords"]["latitude"])
-  console.log('locresLon:',locationResult["coords"]["longitude"])
-  console.log('distance:',distanceFromCampus)
-  console.log('ison Result:', isOnCampus(distanceFromCampus))
-
-  console.log('Scan Result:', biometricAuth["success"]);
-  console.log('Location Result:', locationResult);
-}
-
-
-const [showAlert, setShowAlert] = useState(
-  false,
-);
-
-const [showError, setShowError] = useState(
-  false,
-);
-checkBiometricAuth
   return (
     <SafeAreaView style={styles.container}>
-        <AlertModal
-        displayMode={'success'}
-        displayMsg={'You have successfully Checked in.'}
-        visibility={showAlert}
-        dismissAlert={setShowAlert}
-        />
-
-        <AlertModal
-        displayMode={'fail'}
-        displayMsg={'Unable to Check-in!\n You are not on campus.'}
-        visibility={showError}
-        dismissAlert={setShowError}
-        />
 
       <View style={{ justifyContent: 'flex-start', padding: 15 }}>
         <Image source={profile} style={{
@@ -242,7 +152,7 @@ checkBiometricAuth
 
             setShowMenu(!showMenu);
           }}>
-
+            
             <Image source={showMenu ? ICONS.close : ICONS.menu} style={{
               width: 20,
               height: 20,
@@ -260,45 +170,12 @@ checkBiometricAuth
             paddingTop: 20
           }}>{currentTab}</Text>
         
-          <Image source={
-            (currentTab=="Home" || currentTab=="Profile") ? photo 
-            : (currentTab=="Check in") ? ICONS.fingerPrint
-            : (currentTab=="Notice board") ? ICONS.notifications
-            : (currentTab=="Settings") ? ICONS.settings
-            : ICONS.menu} 
-            
-            style={{
-            width: '100%',
-            height: 300,
-            borderRadius: 15,
-            marginTop: 25
-          }}></Image>
+          <Profile show={currentTab}></Profile>
+          <Checkin show={currentTab}></Checkin>
 
-          <Text style={{
-            fontSize: 20,
-            fontWeight: 'bold', 
-            paddingTop: 15,
-            paddingBottom: 5
-          }}>{currentTab=="Profile" ? "Niamh Spingies" : " " }</Text>
 
-          <Text style={{
-          }}>{currentTab=="Profile" ? "Techie, YouTuber, PS Lover, Apple Sheep's Sister" : " " }</Text>
-
-          <Btn title="CHECK IN" style={{
-            marginTop: 100,
-            marginLeft: 100,
-            fontFamily: "PopSemBold"
-          }} onPress={handleBiometricAuth}></Btn>
-
-<Text style={{
-            fontSize: 11,
-            fontWeight: 'bold', 
-            color: "grey",
-            marginTop: 90,
-            marginLeft: 90}}> {isBiometricSupported ? 'Your device is compatible with Biometrics' 
-              : 'Face or Fingerprint scanner is not available on this device'}
-                  </Text>
         </Animated.View>
+
 
       </Animated.View>
 
