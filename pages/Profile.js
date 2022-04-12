@@ -3,6 +3,11 @@ import { View, Text, StyleSheet, StatusBar, Platform, Image, Modal, ScrollView,A
 import { ICONS } from '../constants';
 import Btn from '../components/Btn';
 import photo from '../assets/photo.jpg';
+import attendPhoto from '../assets/attended.png';
+import absentPhoto from '../assets/absent.png';
+import offDaysPhoto from '../assets/offdays.png';
+import stipendPhoto from '../assets/stipend.png';
+import encouragePhoto from '../assets/encourage.png';
 import * as LocalAuthentication from 'expo-local-authentication'
 import * as Location from 'expo-location';
 import AlertModal from '../components/AlertModal';
@@ -53,6 +58,8 @@ export default function Profile (props){
         dismissAlert={setShowError}
         />
 
+        <ScrollView>
+
         <Image 
             source={photo} 
             style={{
@@ -63,7 +70,6 @@ export default function Profile (props){
             marginTop: 25,
           }}>
         </Image>
-
         <Text style={{
         fontSize: 20,
         fontWeight: 'bold', 
@@ -71,8 +77,68 @@ export default function Profile (props){
         paddingBottom: 5
         }}>{"Niamh Spingies"}
         </Text>
-
         <Text>{"Techie, YouTuber, PS Lover, Apple Sheep's Sister"}</Text>
+
+        <Image 
+            source={attendPhoto} 
+            style={{
+            width: '100%',
+            height: 300,
+            resizeMode: "contain",
+            borderRadius: 15,
+            marginTop: 25,
+          }}>
+        </Image>
+        <Image 
+            source={absentPhoto} 
+            style={{
+            width: '100%',
+            height: 300,
+            resizeMode: "contain",
+            borderRadius: 15,
+            marginTop: 25,
+          }}>
+        </Image>
+        <Image 
+            source={offDaysPhoto} 
+            style={{
+            width: '100%',
+            height: 300,
+            resizeMode: "contain",
+            borderRadius: 15,
+            marginTop: 25,
+          }}>
+        </Image>
+        <Image 
+            source={stipendPhoto} 
+            style={{
+            width: '100%',
+            height: 300,
+            resizeMode: "contain",
+            borderRadius: 15,
+            marginTop: 25,
+          }}>
+        </Image>
+        <Image 
+            source={encouragePhoto} 
+            style={{
+            width: '100%',
+            height: 300,
+            resizeMode: "contain",
+            borderRadius: 15,
+            marginTop: 25,
+          }}>
+        </Image>
+        <Text style={{
+        fontSize: 20,
+        fontWeight: 'bold', 
+        paddingTop: 15,
+        paddingBottom: 5
+        }}>{"Keep it up!"}
+        </Text>
+
+
+        </ScrollView>
 
      </Animated.View>
     

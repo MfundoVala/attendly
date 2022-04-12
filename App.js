@@ -33,21 +33,6 @@ export default function App() {
     PopSemBold: require('./assets/fonts/Poppins-SemiBold.ttf'),
   });
 
-  function pageSelector(props) {
-    Page = props.currentPage
-    if (Page == "Profile"){
-        return(
-            <Profile></Profile>
-        )
-    }
-    else if (Page == "Check in"){
-        return (
-            <Checkin></Checkin>
-        )
-    }
-
-}
-
   return (
     <SafeAreaView style={styles.container}>
 
